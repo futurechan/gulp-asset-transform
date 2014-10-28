@@ -21,6 +21,7 @@ npm install gulp-asset-transform
 * [html](#html)
 * [gulpfile](#gulpfile)
 * [remove](#remove)
+* [implicit tag template references](#implicit_references)
 * [tag templates](#tag_templates)
 * [explicit tags](#explicit_tags)
 
@@ -34,7 +35,7 @@ var at = require('gulp-asset-transform');
 ### comment directive explanation
 Processing is defined with comments that enclose asset tags
 ```html
-<!-- at:id1 >> css:assets/site.css -->
+<!-- at:id1 >> assets/site.css -->
 <link rel="stylesheet" type="text/css" href="app/css1.css">
 <link rel="stylesheet" type="text/css" href="app/css2.css">
 <!-- at:end -->
@@ -46,7 +47,7 @@ The required portion
 <!-- at:some_pipeline_id -->
 ```
 
-Additionally you can include an output template name and desired filename.
+Additionally you can include a desired filename and a tag template to use in case you don't want to match on the extension of the desired filename.
 ```html
 <!-- at:some_pipeline_id >> tag_template_name:sub/path/and/filename.ext -->
 ```
@@ -60,7 +61,7 @@ Additionally you can include an output template name and desired filename.
     <meta charset="UTF-8">
     <title></title>
 
-    <!-- at:id1 >> css:assets/site.css -->
+    <!-- at:id1 >> assets/site.css -->
     <link rel="stylesheet/less" type="text/css" href="less/less1.less">
     <link rel="stylesheet/less" type="text/css" href="less/less2.less">
     <!-- at:end -->
@@ -68,7 +69,7 @@ Additionally you can include an output template name and desired filename.
 </head>
 <body>
 
-	<!-- at:id2 >> js:assets/site.js -->
+	<!-- at:id2 >> assets/site.js -->
 	<script src="js/js1.js"></script>
 	<script src="js/js2.js"></script>
 	<!-- at:end -->
@@ -104,9 +105,31 @@ If you use 'concat', gulp-concat is provided for you, and the filename is parsed
 ### remove
 A special 'remove' directive is provided to remove any tags that should not survive the build process.
 
+<a name="implicit_references"/>
+### implicit tag template references
+A js and css template have been provided. The template to be used is inferred from the extension of the desired filename.
+
+```html
+<!-- at:id >> assets/site.css -->
+<link rel="stylesheet/less" type="text/css" href="less/less1.less">
+<link rel="stylesheet/less" type="text/css" href="less/less2.less">
+<!-- at:end -->
+```
+This will use the tag template assigned to 'css'.
+
+These can be overridden by explicitly specifying a template reference before the desired filename.
+```html
+<!-- at:id >> css1:assets/site.css -->
+<link rel="stylesheet/less" type="text/css" href="less/less1.less">
+<link rel="stylesheet/less" type="text/css" href="less/less2.less">
+<!-- at:end -->
+```
+In this case, we expect to use a tag template called 'css1'.
+If you specify something other than css or js, you will need to provide the tag template.
+
 <a name="tag_templates"/>
 ### tag templates
-A js and css template have been provided, but they can be overridden at both the global and task level
+Tag templates can be overridden at both the global and task level
 ```javascript
 gulp.task('build', function() {
 	gulp.src('./src/client/index.html')
@@ -125,7 +148,7 @@ gulp.task('build', function() {
 		.pipe(gulp.dest('build/client'));
 });
 ```
-All asset transform blocks using ' >> js: ... ' will return '<global-js-tag></global-js-tag>'.
+All asset transform blocks with a desired filename with a '.js' extension and all blocks using ' >> js: ... ' will return '<global-js-tag></global-js-tag>'.
 All asset transform blocks using the pipelineId 'id1' will return '<local-css-tag></local-css-tag>'.
 
 <a name="explicit_tags"/>
