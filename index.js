@@ -2,8 +2,9 @@ var through = require('through2')
     , gutil = require('gulp-util')
     , PluginError = gutil.PluginError
     , PLUGIN_NAME = 'gulp-asset-transform'
-    , processor = require('./lib/processor');
-;
+    , processor = require('./lib/processor')
+    , path = require('path')
+    ;
 
 
 
@@ -21,8 +22,13 @@ module.exports = function(config){
 
         processBlocks(String(file.contents), file.base, function(err, processedFile){
 
+            var gFile = new gutil.File({
+                path: path.basename(file.path),
+                contents: new Buffer(processedFile)
+            });
+
             // make sure the file goes through the next gulp plugin
-            push(processedFile);
+            push(gFile);
 
             // tell the stream engine that we are done with this file
             cb();
