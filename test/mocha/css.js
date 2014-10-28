@@ -21,7 +21,7 @@ describe('css transformation', function(){
         });
     })
 
-    it('', function(done){
+    it('should handle css compilation', function(done){
 
         var stream = at({
             css: {

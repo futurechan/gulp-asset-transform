@@ -21,7 +21,7 @@ describe('js transformation', function(){
         });
     })
 
-    it('', function(done){
+    it('should handle js compilation', function(done){
 
         var stream = at({
             js: {

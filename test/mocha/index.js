@@ -23,7 +23,7 @@ describe('index transformation', function(){
         });
     })
 
-    it('', function(done){
+    it('should handle multiple asset transform blocks', function(done){
 
         var stream = at({
             less: {

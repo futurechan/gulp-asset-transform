@@ -20,7 +20,7 @@ describe('less transformation', function(){
         });
     })
 
-    it('', function(done){
+    it('should handle less compilation', function(done){
 
         var stream = at({
             less: {
