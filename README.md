@@ -20,6 +20,7 @@ npm install gulp-asset-transform
 
 * [html](#html)
 * [gulpfile](#gulpfile)
+* [remove](#remove)
 
 ##Examples
 
@@ -49,6 +50,10 @@ var at = require('gulp-asset-transform');
 	<script src="js/js2.js"></script>
 	<!-- at:end -->
 
+	<!-- at:remove -->
+	<script src="bower_components/less/dist/less-1.7.5.js"></script>
+	<!-- at:end -->
+
 </body>
 </html>
 ```
@@ -73,3 +78,7 @@ gulp.task('build', function() {
 ```
 
 If you use 'concat', gulp-concat is provided for you, and the filename is parsed from the tag field.
+
+<a name="remove"/>
+### remove
+A special 'remove' directive is provided to remove any tags that should not survive the build process.
