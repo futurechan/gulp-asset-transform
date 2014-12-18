@@ -5,7 +5,7 @@ Inspired by [gulp-usemin](https://github.com/zont/gulp-usemin "gulp-usemin")
 
 ##Status
 
-[![BuildStatus](https://travis-ci.org/futurechan/gulp-asset-transform.png?branch=master)](https://travis-ci.org/futurechan/gulp-asset-transform) [![DependencyStatus](https://david-dm.org/futurechan/gulp-asset-transform.png?branch=master)](https://david-dm.org/futurechan/gulp-asset-transform.png?branch=master)
+[![BuildStatus](https://travis-ci.org/futurechan/gulp-asset-transform.png?branch=master)](https://travis-ci.org/futurechan/gulp-asset-transform) [![DependencyStatus](https://david-dm.org/futurechan/gulp-asset-transform.png?branch=master)](https://david-dm.org/futurechan/gulp-asset-transform.png?branch=master) [![TestCoverage](https://coveralls.io/repos/futurechan/gulp-asset-transform/badge.png)](https://coveralls.io/repos/futurechan/gulp-asset-transform/badge.png)
 
 
 ##Installation
