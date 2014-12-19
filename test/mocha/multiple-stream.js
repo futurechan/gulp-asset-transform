@@ -24,8 +24,10 @@ describe('js transformation', function(){
 
         var stream = at({
             js: {
-                tag:'<script src="assets/site.js"></script>',
-                tasks:['concat', rev()]
+              tasks: [
+                'concat',
+                function () { return rev(); }
+              ]
             }
         });
 
