@@ -177,15 +177,15 @@ This function also recieves the filename as the only parameter.
 
 ```javascript
 gulp.task('build', function () {
-	gulp.src('./src/client/index.html')
-		.pipe(at({
-			less: {
-				tasks: [
+  gulp.src('./src/client/index.html')
+    .pipe(at({
+      less: {
+        tasks: [
           function () { return less(); },
           function () { return minifyCss(); },
           function (filename) { return concat(filename); }
         ]
-			}
-		}))
-		.pipe(gulp.dest('build/client'));
+      }
+    }))
+    .pipe(gulp.dest('build/client'));
 });
