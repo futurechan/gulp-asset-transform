@@ -4,6 +4,7 @@ var at = require('../../index')
     , path = require('path')
     , fs = require('fs')
     , chai = require('chai')
+    , concat = require('gulp-concat')
     , expect = chai.expect
 ;
 
@@ -27,6 +28,32 @@ describe('js transformation', function(){
             js: {
                 tag:'<script src="assets/site.js"></script>',
                 tasks:[uglify(), 'concat']
+            }
+        });
+
+        stream.on('data', function(newFile) {
+            //do assertions?
+        });
+
+        stream.on('end', function() {
+            done();
+        });
+
+        stream.write(indexHtml);
+        stream.end();
+
+    });
+
+    it('should handle js stream', function(done){
+
+        var stream = at({
+            js: {
+                tag:'<script src="assets/site.js"></script>',
+                stream: function (files, filename) {
+                  return files
+                    .pipe(uglify())
+                    .pipe(concat(filename));
+                }
             }
         });
 
