@@ -140,7 +140,7 @@ gulp.task('build', function() {
 			},
 			id2: {
 				tasks:[uglify(), 'concat'],
-			}
+			},
 			tagTemplates:{
 				js:function(filename){ return '<global-js-tag></global-js-tag>'}
 			}
@@ -169,3 +169,23 @@ gulp.task('build', function() {
 		.pipe(gulp.dest('build/client'));
 });
 ```
+
+<a name="reusing_pipelines"/>
+### reusing pipelines
+If you need to call the same pipeline twice, you need to define each task as a function that returns the stream object that should be used.
+This function also recieves the filename as the only parameter.
+
+```javascript
+gulp.task('build', function () {
+	gulp.src('./src/client/index.html')
+		.pipe(at({
+			less: {
+				tasks: [
+          function () { return less(); },
+          function () { return minifyCss(); },
+          function (filename) { return concat(filename); }
+        ]
+			}
+		}))
+		.pipe(gulp.dest('build/client'));
+});
