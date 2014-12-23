@@ -142,6 +142,7 @@ gulp.task('build', function () {
     }))
     .pipe(gulp.dest('build/client'));
 });
+```
 
 <a name="stream_function"/>
 ### stream function
