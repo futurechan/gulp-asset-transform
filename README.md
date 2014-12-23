@@ -20,6 +20,9 @@ npm install gulp-asset-transform
 * [comment directive explanation](#comment_directive)
 * [html](#html)
 * [gulpfile](#gulpfile)
+* [tasks array](#tasks_array)
+* [reusing pipelines](#reusing_pipelines)
+* [stream function](#stream_function)
 * [remove](#remove)
 * [implicit tag template references](#implicit_references)
 * [tag templates](#tag_templates)
@@ -92,14 +95,75 @@ gulp.task('build', function() {
 				tasks:[less(), minifyCss(), 'concat']
 			},
 			id2: {
-				tasks:[ngAnnotate(), uglify(), 'concat']
+				stream:function(filestream, outputFilename){
+					return filestream
+						.pipe(uglify())
+						.pipe(concat(outputFilename)); //concat is gulp-concat
+				}
 			}
 		}))
 		.pipe(gulp.dest('build/client'));
 });
 ```
 
-If you use 'concat', gulp-concat is provided for you, and the filename is parsed from the tag field.
+<a name="tasks_array"/>
+### tasks array
+You can set the tasks key on the configuration object to an array of gulp tasks.
+```javascript
+gulp.task('build', function() {
+	gulp.src('./src/client/index.html')
+		.pipe(at({
+			id1: {
+				tasks:[less(), minifyCss(), 'concat']
+			}
+		}))
+		.pipe(gulp.dest('build/client'));
+});
+```
+
+If you use the tasks array configuration, gulp-concat is provided for you via 'concat', and the filename is parsed from the tag field.
+
+<a name="reusing_pipelines"/>
+### reusing pipelines
+If you need to call the same pipeline twice, you need to define each task as a function that returns the stream object that should be used.
+This function also receives the filename as the only parameter.
+
+```javascript
+gulp.task('build', function () {
+  gulp.src('./src/client/index.html')
+    .pipe(at({
+      less: {
+        tasks: [
+          less,
+          minifyCss,
+          function (filename) { return concat(filename); }
+        ]
+      }
+    }))
+    .pipe(gulp.dest('build/client'));
+});
+
+<a name="stream_function"/>
+### stream function
+Alternatively, you can set the stream key on the configuration object to a function that returns a gulp stream.
+The function receives two arguments, the glob stream and the output filename (for concat).
+While more verbose than the tasks array, it has the advantage of supporting logic.
+
+```javascript
+gulp.task('build', function() {
+	gulp.src('./src/client/index.html')
+		.pipe(at({
+			id2: {
+				stream:function(filestream, outputFilename){
+					return filestream
+						.pipe(uglify())
+						.pipe(concat(outputFilename)); //concat is gulp-concat
+				}
+			}
+		}))
+		.pipe(gulp.dest('build/client'));
+});
+```
 
 <a name="remove"/>
 ### remove
@@ -169,23 +233,3 @@ gulp.task('build', function() {
 		.pipe(gulp.dest('build/client'));
 });
 ```
-
-<a name="reusing_pipelines"/>
-### reusing pipelines
-If you need to call the same pipeline twice, you need to define each task as a function that returns the stream object that should be used.
-This function also recieves the filename as the only parameter.
-
-```javascript
-gulp.task('build', function () {
-  gulp.src('./src/client/index.html')
-    .pipe(at({
-      less: {
-        tasks: [
-          function () { return less(); },
-          function () { return minifyCss(); },
-          function (filename) { return concat(filename); }
-        ]
-      }
-    }))
-    .pipe(gulp.dest('build/client'));
-});
