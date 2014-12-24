@@ -213,8 +213,8 @@ gulp.task('build', function() {
 		.pipe(gulp.dest('build/client'));
 });
 ```
-All asset transform blocks with a desired filename with a '.js' extension and all blocks using ' >> js: ... ' will return '<global-js-tag></global-js-tag>'.
-All asset transform blocks using the pipelineId 'id1' will return '<local-css-tag></local-css-tag>'.
+All asset transform blocks with a desired filename with a '.js' extension and all blocks using ' >> js: ... ' will return '```<global-js-tag></global-js-tag>```'.
+All asset transform blocks using the pipelineId 'id1' will return '```<local-css-tag></local-css-tag>```'.
 
 <a name="explicit_tags"/>
 ### explicit tags
