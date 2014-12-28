@@ -206,7 +206,8 @@ gulp.task('build', function() {
 			},
 			id2: {
 				tasks:[uglify(), 'concat'],
-			},
+			}
+		},{
 			tagTemplates:{
 				js:function(filename){ return '<global-js-tag></global-js-tag>'}
 			}
@@ -253,9 +254,9 @@ gulp.task('build', function() {
 		},{
 			regExps:{
 				start: /<!--\s*build:(\w+)(?:(?:\(([^\)]+?)\))?\s+(\/?([^\s]+?))?)?\s*-->/gim,
-				end: /<!--\s*endbuild\s*-->/gim,
-				//script: regexp for script tags,
-				//link: regexp for link tags,
+				end: /<!--\s*endbuild\s*-->/gim
+				//script: regexp for script tags
+				//link: regexp for link tags
 			}
 		}))
 		.pipe(gulp.dest('build/client'));

@@ -7,11 +7,13 @@ var at = require('../../index')
     , fs = require('fs')
     , chai = require('chai')
     , expect = chai.expect
-    ;
+    , sinon = require('sinon')
+    , gutil = require('gulp-util')
+;
 
 describe('tag-template transformation', function(){
 
-    var indexHtml;
+    var indexHtml, sandbox;
 
     before(function(){
         var filePath = path.join(__dirname, '../assets/tag-template.html');
@@ -21,6 +23,14 @@ describe('tag-template transformation', function(){
             base:     path.dirname(filePath),
             contents: fs.readFileSync(filePath)
         });
+    })
+
+    beforeEach(function(){
+        sandbox = sinon.sandbox.create();
+    })
+
+    afterEach(function(){
+        sandbox.restore();
     })
 
     it('should use the default tag templates', function(done){
@@ -55,6 +65,41 @@ describe('tag-template transformation', function(){
             },
             id2: {
                 tasks:[uglify(), 'concat']
+            }
+        }, {
+            tagTemplates: {
+                css: function () {
+                    return '<css-tag></css-tag>'
+                },
+                js: function () {
+                    return '<js-tag></js-tag>'
+                }
+            }
+        });
+
+        stream.on('data', function(newFile) {
+            //do assertions?
+        });
+
+        stream.on('end', function() {
+            done();
+        });
+
+        stream.write(indexHtml);
+        stream.end();
+
+    })
+
+    it('should warn if tag templates is set on the block config object', function(done){
+
+        var spy = sandbox.spy(gutil, 'log');
+
+        var stream = at({
+            id1: {
+                tasks:[less(), minifyCss(), 'concat']
+            },
+            id2: {
+                tasks:[uglify(), 'concat']
             },
             tagTemplates:{
                 css:function(){ return '<css-tag></css-tag>'},
@@ -67,6 +112,7 @@ describe('tag-template transformation', function(){
         });
 
         stream.on('end', function() {
+            sinon.assert.called(spy)
             done();
         });
 
