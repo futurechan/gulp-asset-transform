@@ -26,15 +26,16 @@ describe('tag-template transformation', function(){
     it('should use build/endbuild', function(done){
 
         var stream = at({
-            regExps:{
-                start: /<!--\s*build:(\w+)(?:(?:\(([^\)]+?)\))?\s+(\/?([^\s]+?))?)?\s*-->/gim,
-                end: /<!--\s*endbuild\s*-->/gim
-            },
             id1: {
                 tasks:[less(), minifyCss(), 'concat']
             },
             id2: {
                 tasks:[uglify(), 'concat']
+            }
+        }, {
+            regExps:{
+                start: /<!--\s*build:(\w+)(?:(?:\(([^\)]+?)\))?\s+(\/?([^\s]+?))?)?\s*-->/gim,
+                end: /<!--\s*endbuild\s*-->/gim
             }
         });
 

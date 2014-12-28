@@ -244,17 +244,18 @@ The alternate path in the comment directive will be ignored.
 gulp.task('build', function() {
 	gulp.src('./src/client/index.html')
 		.pipe(at({
-			regExps:{
-				start: /<!--\s*build:(\w+)(?:(?:\(([^\)]+?)\))?\s+(\/?([^\s]+?))?)?\s*-->/gim,
-				end: /<!--\s*endbuild\s*-->/gim,
-				//script: regexp for script tags,
-				//link: regexp for link tags,
-			},
 			id1: {
 				tasks:[less(), minifyCss(), 'concat']
 			},
 			id2: {
 				tasks:[uglify(), 'concat']
+			}
+		},{
+			regExps:{
+				start: /<!--\s*build:(\w+)(?:(?:\(([^\)]+?)\))?\s+(\/?([^\s]+?))?)?\s*-->/gim,
+				end: /<!--\s*endbuild\s*-->/gim,
+				//script: regexp for script tags,
+				//link: regexp for link tags,
 			}
 		}))
 		.pipe(gulp.dest('build/client'));

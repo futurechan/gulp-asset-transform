@@ -9,7 +9,8 @@ var through = require('through2')
 
 
 
-module.exports = function(config){
+module.exports = function(config, opts){
+    opts = opts || {};
 
     var stream = through.obj(function(file, enc, cb) {
         var push = this.push.bind(this);
@@ -19,7 +20,7 @@ module.exports = function(config){
             return cb();
         }
 
-        var parseBlocks = parser(config);
+        var parseBlocks = parser(config, opts);
 
         var processBlocks = processor(config, push);
 
