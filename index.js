@@ -2,13 +2,43 @@ var through = require('through2')
     , gutil = require('gulp-util')
     , PluginError = gutil.PluginError
     , PLUGIN_NAME = 'gulp-asset-transform'
+    , parser = require('./lib/parser')
     , processor = require('./lib/processor')
     , path = require('path')
+    , joi = require('joi')
+    , configSchema = require('./lib/schemas/configSchema.js')
+    , optionsSchema = require('./lib/schemas/optionsSchema.js')
+    , _ = require('lodash')
     ;
 
+var validate = function (config, opts) {
 
+    if (config && config.tagTemplates) {
+        opts.tagTemplates = config.tagTemplates;
+        delete config.tagTemplates;
+        gutil.log('tagTemplates configuration has moved to the secondary options parameter.');
+    }
 
-module.exports = function(config){
+    joi.validate(config, configSchema, function (err, validatedConfig) {
+        if (err) {
+            throw new PluginError(PLUGIN_NAME, err, { showStack: false });
+        }
+        _.extend(config, validatedConfig);
+    });
+
+    joi.validate(opts, optionsSchema, function (err, validatedOpts) {
+        if (err) {
+            throw new PluginError(PLUGIN_NAME, err, { showStack: false });
+        }
+        _.extend(opts, validatedOpts);
+    });
+
+};
+
+module.exports = function(config, opts){
+    opts = opts || {};
+
+    validate(config, opts);
 
     var stream = through.obj(function(file, enc, cb) {
         var push = this.push.bind(this);
@@ -18,21 +48,32 @@ module.exports = function(config){
             return cb();
         }
 
+        var parseBlocks = parser(config, opts);
+
         var processBlocks = processor(config, push);
 
-        processBlocks(String(file.contents), file.base, function(err, processedFile){
+        parseBlocks(String(file.contents), file.base, function(err, blocks){
+            if(err){
+                this.emit('error', new PluginError(PLUGIN_NAME, err));
+                return cb();
+            }
 
-            var gFile = new gutil.File({
-                path: path.basename(file.path),
-                contents: new Buffer(processedFile)
-            });
+            processBlocks(blocks, function(err, processedFile){
 
-            // make sure the file goes through the next gulp plugin
-            push(gFile);
+                var gFile = new gutil.File({
+                    path: path.basename(file.path),
+                    contents: new Buffer(processedFile)
+                });
 
-            // tell the stream engine that we are done with this file
-            cb();
+                // make sure the file goes through the next gulp plugin
+                push(gFile);
+
+                // tell the stream engine that we are done with this file
+                cb();
+            })
         })
+
+
     });
 
     // returning the file stream

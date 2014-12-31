@@ -27,6 +27,7 @@ npm install gulp-asset-transform
 * [implicit tag template references](#implicit_references)
 * [tag templates](#tag_templates)
 * [explicit tags](#explicit_tags)
+* [legacy directives](#legacy_directives)
 
 ##Examples
 
@@ -205,7 +206,8 @@ gulp.task('build', function() {
 			},
 			id2: {
 				tasks:[uglify(), 'concat'],
-			},
+			}
+		},{
 			tagTemplates:{
 				js:function(filename){ return '<global-js-tag></global-js-tag>'}
 			}
@@ -229,6 +231,32 @@ gulp.task('build', function() {
 			},
 			id2: {
 				tasks:[uglify(), 'concat'],
+			}
+		}))
+		.pipe(gulp.dest('build/client'));
+});
+```
+
+<a name="legacy_directives"/>
+### legacy directives
+In effort to conform to the more popular ```build/endbuild``` directives, you can override any of the regular expressions by supplying a regExps object.
+The alternate path in the comment directive will be ignored.
+```javascript
+gulp.task('build', function() {
+	gulp.src('./src/client/index.html')
+		.pipe(at({
+			id1: {
+				tasks:[less(), minifyCss(), 'concat']
+			},
+			id2: {
+				tasks:[uglify(), 'concat']
+			}
+		},{
+			regExps:{
+				start: /<!--\s*build:(\w+)(?:(?:\(([^\)]+?)\))?\s+(\/?([^\s]+?))?)?\s*-->/gim,
+				end: /<!--\s*endbuild\s*-->/gim
+				//script: regexp for script tags
+				//link: regexp for link tags
 			}
 		}))
 		.pipe(gulp.dest('build/client'));
