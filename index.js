@@ -5,12 +5,40 @@ var through = require('through2')
     , parser = require('./lib/parser')
     , processor = require('./lib/processor')
     , path = require('path')
+    , joi = require('joi')
+    , configSchema = require('./lib/schemas/configSchema.js')
+    , optionsSchema = require('./lib/schemas/optionsSchema.js')
+    , _ = require('lodash')
     ;
 
+var validate = function (config, opts) {
 
+    if (config && config.tagTemplates) {
+        opts.tagTemplates = config.tagTemplates;
+        delete config.tagTemplates;
+        gutil.log('tagTemplates configuration has moved to the secondary options parameter.');
+    }
+
+    joi.validate(config, configSchema, function (err, validatedConfig) {
+        if (err) {
+            throw new PluginError(PLUGIN_NAME, err, { showStack: false });
+        }
+        _.extend(config, validatedConfig);
+    });
+
+    joi.validate(opts, optionsSchema, function (err, validatedOpts) {
+        if (err) {
+            throw new PluginError(PLUGIN_NAME, err, { showStack: false });
+        }
+        _.extend(opts, validatedOpts);
+    });
+
+};
 
 module.exports = function(config, opts){
     opts = opts || {};
+
+    validate(config, opts);
 
     var stream = through.obj(function(file, enc, cb) {
         var push = this.push.bind(this);
