@@ -84,8 +84,7 @@ describe('css transformation', function(){
 		})
 		
 		it('should handle gulp-size only', function(done){		
-			this.timeout(50000);
-		
+			
 			var stream = at({
 				css: {
 					tasks:[
