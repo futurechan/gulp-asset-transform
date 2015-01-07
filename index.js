@@ -9,6 +9,7 @@ var through = require('through2')
     , configSchema = require('./lib/schemas/configSchema.js')
     , optionsSchema = require('./lib/schemas/optionsSchema.js')
     , _ = require('lodash')
+    , gulpConcat = require('gulp-concat')
     ;
 
 var validate = function (config, opts) {
@@ -80,3 +81,9 @@ module.exports = function(config, opts){
     return stream;
 
 }
+
+module.exports.concat = function (customFilename) {
+    return function (filename) {
+        return gulpConcat(customFilename || filename);
+    }
+};
