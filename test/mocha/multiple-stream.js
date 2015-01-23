@@ -1,5 +1,4 @@
 var at = require('../../index')
-    , gulp = require('gulp')
     , rev = require('gulp-rev')
     , gutil = require('gulp-util')
     , path = require('path')
