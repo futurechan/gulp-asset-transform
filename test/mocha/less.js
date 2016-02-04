@@ -1,6 +1,7 @@
 var at = require('../../index')
     , less = require('gulp-less')
     , minifyCss = require('gulp-minify-css')
+    , concat = require('gulp-concat')
     , gutil = require('gulp-util')
     , path = require('path')
     , fs = require('fs')
@@ -20,25 +21,60 @@ describe('less transformation', function(){
         });
     })
 
-    it('should handle less compilation', function(done){
+    describe('using non-reentrant tasks', function(){
 
-        var stream = at({
-            less: {
-                tag:'<link rel="stylesheet" type="text/css" href="assets/site_less.css">',
-                tasks:[less(), minifyCss(), 'concat']
-            }
-        });
+        it.skip('should handle less compilation', function(done){
 
-        stream.on('data', function(newFile) {
-            //do assertions?
-        });
+            var stream = at({
+                less: {
+                    tag:'<link rel="stylesheet" type="text/css" href="assets/site_less.css">',
+                    tasks:[less(), minifyCss(), 'concat']
+                }
+            });
 
-        stream.on('end', function() {
-            done();
-        });
+            stream.on('data', function(newFile) {
+                //do assertions?
+            });
 
-        stream.write(indexHtml);
-        stream.end();
+            stream.on('end', function() {
+                done();
+            });
+
+            stream.write(indexHtml);
+            stream.end();
+
+        })
+
+    })
+
+    describe('using stream strategy', function(){
+
+        it('should handle less compilation', function(done){
+
+            var stream = at({
+                less: {
+                    tag:'<link rel="stylesheet" type="text/css" href="assets/site_less.css">',
+                    stream:function(filestream, outputFilename) {
+                        return filestream
+                            .pipe(less())
+                            .pipe(minifyCss())
+                            .pipe(concat(outputFilename));
+                    }
+                }
+            });
+
+            stream.on('data', function(newFile) {
+                //do assertions?
+            });
+
+            stream.on('end', function() {
+                done();
+            });
+
+            stream.write(indexHtml);
+            stream.end();
+
+        })
 
     })
 
