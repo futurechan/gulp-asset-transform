@@ -3,7 +3,7 @@ var through = require('through2')
     , PluginError = gutil.PluginError
     , PLUGIN_NAME = 'gulp-asset-transform'
     , parser = require('./lib/parser')
-    , processor = require('./lib/processor')
+    , Processor = require('./lib/processor')
     , path = require('path')
     , joi = require('joi')
     , configSchema = require('./lib/schemas/configSchema.js')
@@ -51,7 +51,7 @@ module.exports = function(config, opts){
 
         var parseBlocks = parser(config, opts);
 
-        var processBlocks = processor(config, push);
+        var processor = new Processor(config, push);
 
         parseBlocks(String(file.contents), file.base, function(err, blocks){
             if(err){
@@ -59,7 +59,7 @@ module.exports = function(config, opts){
                 return cb();
             }
 
-            processBlocks(blocks, function(err, processedFile){
+            processor.processBlocks(blocks, function(err, processedFile){
 
                 var gFile = new gutil.File({
                     path: path.basename(file.path),

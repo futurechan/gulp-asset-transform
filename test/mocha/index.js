@@ -2,6 +2,7 @@ var at = require('../../index')
     , less = require('gulp-less')
     , minifyCss = require('gulp-minify-css')
     , uglify = require('gulp-uglify')
+    , concat = require('gulp-concat')
     , gutil = require('gulp-util')
     , path = require('path')
     , fs = require('fs')
@@ -23,29 +24,72 @@ describe('index transformation', function(){
         });
     })
 
-    it('should handle multiple asset transform blocks', function(done){
+    describe.skip('using non-reentrant tasks', function() {
 
-        var stream = at({
-            less: {
-                tag:'<link rel="stylesheet" type="text/css" href="assets/site_less.css">',
-                tasks:[less(), minifyCss(), 'concat']
-            },
-            js: {
-                tag:'<script src="assets/site.js"></script>',
-                tasks:[uglify(), 'concat']
-            }
-        });
+        it('should handle multiple asset transform blocks', function (done) {
 
-        stream.on('data', function(newFile) {
-            //do assertions?
-        });
+            var stream = at({
+                less: {
+                    tag: '<link rel="stylesheet" type="text/css" href="assets/site_less.css">',
+                    tasks: [less(), minifyCss(), 'concat']
+                },
+                js: {
+                    tag: '<script src="assets/site.js"></script>',
+                    tasks: [uglify(), 'concat']
+                }
+            });
 
-        stream.on('end', function() {
-            done();
-        });
+            stream.on('data', function (newFile) {
+                //do assertions?
+            });
 
-        stream.write(indexHtml);
-        stream.end();
+            stream.on('end', function () {
+                done();
+            });
+
+            stream.write(indexHtml);
+            stream.end();
+
+        })
+
+    })
+
+    describe('using stream strategy', function() {
+
+        it('should handle multiple asset transform blocks', function (done) {
+
+            var stream = at({
+                less: {
+                    tag: '<link rel="stylesheet" type="text/css" href="assets/site_less.css">',
+                    stream: function (filestream, outputFilename) {
+                        return filestream
+                            .pipe(less())
+                            .pipe(minifyCss())
+                            .pipe(concat(outputFilename)); //concat is gulp-concat
+                    }
+                },
+                js: {
+                    tag: '<script src="assets/site.js"></script>',
+                    stream: function (filestream, outputFilename) {
+                        return filestream
+                            .pipe(uglify())
+                            .pipe(concat(outputFilename)); //concat is gulp-concat
+                    }
+                }
+            });
+
+            stream.on('data', function (newFile) {
+                //do assertions?
+            });
+
+            stream.on('end', function () {
+                done();
+            });
+
+            stream.write(indexHtml);
+            stream.end();
+
+        })
 
     })
 
