@@ -27,6 +27,7 @@ npm install gulp-asset-transform
 * [implicit tag template references](#implicit_references)
 * [tag templates](#tag_templates)
 * [explicit tags](#explicit_tags)
+* [concat](#concat)
 * [legacy directives](#legacy_directives)
 
 ##Examples
@@ -231,6 +232,28 @@ gulp.task('build', function() {
 			},
 			id2: {
 				tasks:[uglify(), 'concat'],
+			}
+		}))
+		.pipe(gulp.dest('build/client'));
+});
+```
+
+<a name="concat"/>
+### concat
+The concat task can be invoked in basically two ways, by using literal string `'concat:<separator>'` and Asset Transform's helper function `.concat([<filename>[, separator]])`.
+The **filename** argument is optional and if set it will be used to define the output file name. The default value is the name defined in the **at** block.
+The **separator** argument is also optional and is used to define the separator that will join all files contents.
+For instance, in case there are two files named **file_1** and **file_2** and the separator is '`,`' (comma) the output would be `<file_1 contents>,<file_2 contents>`.
+Example:
+```javascript
+gulp.task('build', function() {
+	gulp.src('./src/client/index.html')
+		.pipe(at({
+			id1: {
+                tasks:[uglify(), 'concat:;\n']
+            },
+			id2: {
+				tasks:[uglify(), at.concat('id2.js', ';\n']
 			}
 		}))
 		.pipe(gulp.dest('build/client'));

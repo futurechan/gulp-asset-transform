@@ -82,8 +82,14 @@ module.exports = function(config, opts){
 
 }
 
-module.exports.concat = function (customFilename) {
+module.exports.concat = function (customFilename, options) {
+    if (!options) {
+        options = {};
+    } else if (typeof options === 'string') {
+        options = { newLine: options }
+    }
+
     return function (filename) {
-        return gulpConcat(customFilename || filename);
+        return gulpConcat(customFilename || filename, options);
     }
 };
