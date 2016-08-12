@@ -1,7 +1,7 @@
 var through = require('through2')
     , gutil = require('gulp-util')
     , PluginError = gutil.PluginError
-    , PLUGIN_NAME = 'gulp-asset-transform'
+    , PLUGIN_NAME = require('./package.json').name
     , parser = require('./lib/parser')
     , Processor = require('./lib/processor')
     , path = require('path')
@@ -53,9 +53,10 @@ module.exports = function(config, opts){
 
         var processor = new Processor(config, push);
 
+        var self = this;
         parseBlocks(String(file.contents), file.base, function(err, blocks){
             if(err){
-                this.emit('error', new PluginError(PLUGIN_NAME, err));
+                self.emit('error', new PluginError(PLUGIN_NAME, err));
                 return cb();
             }
 
